@@ -6,6 +6,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.utils import pad_sequences
 import pickle
+import re
 
 
 class TokenAndPositionEmbedding(layers.Layer):
@@ -46,6 +47,37 @@ class TransformerBlock(layers.Layer):
         return self.layernorm2(out1 + ffn_output)
 
 
+def preprocess_sentence(sentence):
+    sentence = sentence.lower().strip()
+    # creating a space between a word and the punctuation following it
+    # eg: "he is a boy." => "he is a boy ."
+    sentence = re.sub(r"([?.!,])", r" \1 ", sentence)
+    sentence = re.sub(r'[" "]+', " ", sentence)
+    # removing contractions
+    sentence = re.sub(r"i'm", "i am", sentence)
+    sentence = re.sub(r"he's", "he is", sentence)
+    sentence = re.sub(r"she's", "she is", sentence)
+    sentence = re.sub(r"it's", "it is", sentence)
+    sentence = re.sub(r"that's", "that is", sentence)
+    sentence = re.sub(r"what's", "that is", sentence)
+    sentence = re.sub(r"where's", "where is", sentence)
+    sentence = re.sub(r"how's", "how is", sentence)
+    sentence = re.sub(r"\'ll", " will", sentence)
+    sentence = re.sub(r"\'ve", " have", sentence)
+    sentence = re.sub(r"\'re", " are", sentence)
+    sentence = re.sub(r"\'d", " would", sentence)
+    sentence = re.sub(r"\'re", " are", sentence)
+    sentence = re.sub(r"won't", "will not", sentence)
+    sentence = re.sub(r"can't", "cannot", sentence)
+    sentence = re.sub(r"n't", " not", sentence)
+    sentence = re.sub(r"n'", "ng", sentence)
+    sentence = re.sub(r"'bout", "about", sentence)
+    # replacing everything with space except (a-z, A-Z, ".", "?", "!", ",")
+    sentence = re.sub(r"[^a-zA-Z?.!,]+", " ", sentence)
+    sentence = sentence.strip()
+    return sentence
+
+
 with tf.keras.utils.custom_object_scope(
     {
         "TokenAndPositionEmbedding": TokenAndPositionEmbedding,
@@ -54,7 +86,8 @@ with tf.keras.utils.custom_object_scope(
 ):
     model = tf.keras.models.load_model("./IntentClassificationTransformer.h5")
 
-text = ["Your staff's delivery time was accurate."]
+text = ["How can I track my order?"]
+text = preprocess_sentence(text[0])
 
 tokenizer = Tokenizer(num_words=20000, split=" ")
 
