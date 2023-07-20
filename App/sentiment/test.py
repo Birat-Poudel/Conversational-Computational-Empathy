@@ -54,7 +54,7 @@ with tf.keras.utils.custom_object_scope(
 ):
     model = tf.keras.models.load_model("./SentimentAnalysisTransformer.h5")
 
-text = ["I am happy with the product."]
+text = ["The product quality is worse. I want to return this purchase."]
 
 tokenizer = Tokenizer(num_words=20000, split=" ")
 
