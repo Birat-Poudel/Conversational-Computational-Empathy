@@ -87,7 +87,7 @@ with tf.keras.utils.custom_object_scope(
     model = tf.keras.models.load_model("./SentimentAnalysisTransformer.h5")
 
 
-text = ["I love the product."]
+text = ["The product quality is worse"]
 text = preprocess_sentence(text[0])
 
 

@@ -86,7 +86,7 @@ with tf.keras.utils.custom_object_scope(
 ):
     model = tf.keras.models.load_model("./IntentClassificationTransformer.h5")
 
-text = ["How can I track my order?"]
+text = ["I want refund. The product is damaged."]
 text = preprocess_sentence(text[0])
 
 tokenizer = Tokenizer(num_words=20000, split=" ")
